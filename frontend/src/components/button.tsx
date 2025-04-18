@@ -1,5 +1,19 @@
 import { ButtonHTMLAttributes, ReactNode } from "react";
 
-export function Button({ children, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { children: ReactNode }) {
-  return <button {...props} className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded shadow" >{children}</button>;
+export function Button({
+  children,
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement> & { children: ReactNode }) {
+  return (
+    <button
+      {...props}
+      className="rounded-lg px-4 py-2 font-medium transition"
+      style={{
+        backgroundColor: 'var(--accent)',
+        color: '#fff',
+      }}
+    >
+      {children}
+    </button>
+  );
 }
