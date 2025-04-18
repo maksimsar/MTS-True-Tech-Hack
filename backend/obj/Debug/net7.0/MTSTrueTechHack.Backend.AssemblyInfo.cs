@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MTSTrueTechHack.Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e75566f60fe61b45eb010abe73da8be1a993f3b7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2861e2c188a424bdb0ba852d670692d5bf1f050d")]
 [assembly: System.Reflection.AssemblyProductAttribute("MTSTrueTechHack.Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MTSTrueTechHack.Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
