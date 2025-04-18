@@ -26,7 +26,7 @@ namespace MTSTrueTechHack.Data
                     .Build();
 
                 var connectionString = configuration.GetConnectionString("DefaultConnection");
-                optionsBuilder.UseSqlServer(connectionString); // Можно заменить на UseNpgsql для PostgreSQL
+                optionsBuilder.UseNpgsql(connectionString); // Можно заменить на UseNpgsql для PostgreSQL
             }
         }
 
@@ -41,7 +41,9 @@ namespace MTSTrueTechHack.Data
                 entity.Property(u => u.Username).IsRequired().HasMaxLength(50);
                 entity.Property(u => u.Email).IsRequired().HasMaxLength(100);
                 entity.Property(u => u.PasswordHash).IsRequired().HasMaxLength(256);
-                entity.Property(u => u.CreatedAt).IsRequired().HasColumnType("datetime");
+                entity.Property(u => u.CreatedAt)
+                    .IsRequired()
+                    .HasColumnType("timestamp without time zone");
             });
 
             // Настройка сущности Schema
@@ -54,8 +56,8 @@ namespace MTSTrueTechHack.Data
                 entity.Property(s => s.Name).IsRequired().HasMaxLength(100);
                 entity.Property(s => s.Description).HasMaxLength(500);
                 entity.Property(s => s.JSONSchema).IsRequired();
-                entity.Property(s => s.CreatedAt).IsRequired().HasColumnType("datetime");
-                entity.Property(s => s.UpdatedAt).IsRequired().HasColumnType("datetime");
+                entity.Property(s => s.CreatedAt).IsRequired().HasColumnType("timestamp without time zone");
+                entity.Property(s => s.UpdatedAt).IsRequired().HasColumnType("timestamp without time zone");
 
                 entity.HasOne(s => s.User)
                     .WithMany(u => u.Schemas)
@@ -72,7 +74,7 @@ namespace MTSTrueTechHack.Data
                 entity.Property(m => m.SchemaID).IsRequired();
                 entity.Property(m => m.Text).IsRequired().HasMaxLength(1000);
                 entity.Property(m => m.IsFromUser).IsRequired();
-                entity.Property(m => m.Timestamp).IsRequired().HasColumnType("datetime");
+                entity.Property(m => m.Timestamp).IsRequired().HasColumnType("timestamp without time zone");
 
                 entity.HasOne(m => m.Schema)
                     .WithMany(s => s.Messages)
