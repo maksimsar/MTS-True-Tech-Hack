@@ -3,6 +3,9 @@ using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using MTSTrueTechHack.Backend;
 using MTSTrueTechHack.Data;
+using MTSTrueTechHack.Backend.Models.Dtos;
+using MTSTrueTechHack.Backend.Services;
+using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +19,8 @@ builder.Services.AddScoped<ISchemaRepository, SchemaRepository>();
 
 // Сервис бизнес‑логики
 builder.Services.AddScoped<ISchemaService, SchemaService>();
+
+builder.Services.AddHttpClient<GptClient>();
 
 
 // 2) FluentValidation
@@ -46,18 +51,29 @@ app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
 {
-    var svc = scope.ServiceProvider.GetRequiredService<ISchemaService>();
-    // передаём «заглушечный» ключ (GptClient можно настроить так, чтобы возвращал "{}")
-    var testReq = new CreateSchemaRequest 
-    { 
-        UserId = 1, 
-        Name = "Test", 
-        Description = "desc" 
-        // остальные поля, если есть 
-    };
-    var result = await svc.CreateAsync(testReq);
-    Console.WriteLine("Generated JSON Schema: " + result.JsonSchema);
+    var gpt = scope.ServiceProvider.GetRequiredService<GptClient>();
+
+    // Создаём DTO (четвёртый параметр — исходная JSON-схема, для теста оставляем пустой)
+    var createDto = new CreateSchemaDto(
+        UserId: 1,
+        Name: "Test",
+        Description: "desc",
+        JsonSchema: ""
+    );
+    var stopwatch = Stopwatch.StartNew();
+var schemaJson = await gpt.GenerateSchemaAsync(
+    new CreateSchemaDto(1, "TestObject", "Пример описания", "")
+);
+stopwatch.Stop();
+
+Console.WriteLine("GPT JSON Schema:\n" + schemaJson);
+Console.WriteLine($"Time elapsed: {stopwatch.ElapsedMilliseconds} ms");
+    // Вызываем заглушку
+    var result = await gpt.GenerateSchemaAsync(createDto);
+
+    Console.WriteLine("GPT returned: " + result);
 }
+
 
 
 app.Run();

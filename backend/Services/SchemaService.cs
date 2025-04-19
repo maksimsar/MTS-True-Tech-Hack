@@ -23,22 +23,23 @@ public class SchemaService : ISchemaService
         // map request → CreateSchemaDto
         var dto = _mapper.Map<CreateSchemaDto>(req);
 
-        // генерируем
+        // генерируем (метод остался GenerateSchemaAsync)
         var json = await _gpt.GenerateSchemaAsync(dto);
 
-        var entity = new Schema {
-            UserID     = req.UserId,
-            Name       = req.Name,
-            Description= req.Description,
-            JSONSchema = json,
-            CreatedAt  = DateTime.UtcNow,
-            UpdatedAt  = DateTime.UtcNow
+        var entity = new Schema
+        {
+            UserID      = req.UserId,
+            Name        = req.Name,
+            Description = req.Description,
+            JSONSchema  = json,
+            CreatedAt   = DateTime.UtcNow,
+            UpdatedAt   = DateTime.UtcNow
         };
 
         await _repo.AddAsync(entity);
         await _repo.SaveAsync();
 
-        // map to SchemaDto (тот же класс, что вернёт контроллер)
+        // map to SchemaDto и возвращаем
         return _mapper.Map<SchemaDto>(entity);
     }
 
@@ -47,13 +48,17 @@ public class SchemaService : ISchemaService
         var schema = await _repo.GetAsync(schemaId)
                      ?? throw new KeyNotFoundException($"Schema {schemaId} not found");
 
-        var chatDto = new ChatDto { // ChatDto — внутренний DTO для GptClient
-            JsonSchema = schema.JSONSchema,
-            Message    = req.Message,
-            History    = req.History
-        };
+        // Конструируем DTO через конструктор, передаём все три параметра
+        var chatDto = new ChatDto(
+            schema.JSONSchema,  // JsonSchema
+            req.Message,        // Message
+            req.History         // History
+        );
 
-        var replyText = await _gpt.GenerateChatAsync(chatDto);
+        // Вызываем именно ContinueChatAsync, а не GenerateChatAsync
+        var replyText = await _gpt.ContinueChatAsync(chatDto);
+
+        // Используем позиционные аргументы, чтобы не ошибаться с регистром имен
         return new ChatMessageResponse(replyText, false, DateTime.UtcNow);
     }
 }

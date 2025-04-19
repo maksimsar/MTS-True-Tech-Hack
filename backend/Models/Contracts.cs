@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using MTSTrueTechHack.Backend.Models.Dtos; 
+
 namespace MTSTrueTechHack.Backend.Models
 {
     public sealed record CreateSchemaRequest(
