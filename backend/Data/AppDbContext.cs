@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using MTSTrueTechHack.Backend.Models;
-using Microsoft.Extensions.Configuration;
 
 namespace MTSTrueTechHack.Data
 {
