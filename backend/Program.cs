@@ -8,6 +8,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 // 1) Controllers
 builder.Services.AddControllers();
+// AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+// Репозиторий
+builder.Services.AddScoped<ISchemaRepository, SchemaRepository>();
+
+// Сервис бизнес‑логики
+builder.Services.AddScoped<ISchemaService, SchemaService>();
+
 
 // 2) FluentValidation
 builder.Services.AddFluentValidationAutoValidation();
@@ -33,4 +42,22 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+// Checking
+
+using (var scope = app.Services.CreateScope())
+{
+    var svc = scope.ServiceProvider.GetRequiredService<ISchemaService>();
+    // передаём «заглушечный» ключ (GptClient можно настроить так, чтобы возвращал "{}")
+    var testReq = new CreateSchemaRequest 
+    { 
+        UserId = 1, 
+        Name = "Test", 
+        Description = "desc" 
+        // остальные поля, если есть 
+    };
+    var result = await svc.CreateAsync(testReq);
+    Console.WriteLine("Generated JSON Schema: " + result.JsonSchema);
+}
+
+
 app.Run();

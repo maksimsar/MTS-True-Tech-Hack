@@ -1,3 +1,26 @@
+namespace MTSTrueTechHack.Backend.Models
+{
+    public sealed record CreateSchemaRequest(
+        int    UserId,
+        string Name,
+        string Description
+    );
+
+    public sealed record ChatRequest(
+        string                   Message,
+        IEnumerable<ChatMessageDto> History
+    );
+
+    public sealed record ChatMessageResponse(
+        string   Text,
+        bool     IsFromUser,
+        DateTime Timestamp
+    );
+}
+
+
+
+/*
 // TODO: при выделении слоёв перенести каждый контракт
 //       в Api/Contracts/Schema/...
 
@@ -52,3 +75,6 @@ public sealed record ChatMessageResponse(
     /// <summary>Момент отправки сообщения (UTC).</summary>
     DateTime Timestamp
 );
+*/
+
+//ЗАГЛУШКА
