@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MTSTrueTechHack.Models
+namespace MTSTrueTechHack.Domain.Entities
 {
     public class User
     {

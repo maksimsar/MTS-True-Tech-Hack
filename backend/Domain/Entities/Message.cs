@@ -1,6 +1,6 @@
 using System;
 
-namespace MTSTrueTechHack.Models
+namespace MTSTrueTechHack.Domain.Entities
 {
     public class Message
     {
