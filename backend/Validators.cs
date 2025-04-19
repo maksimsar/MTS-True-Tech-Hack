@@ -1,3 +1,4 @@
+// File: Validators.cs
 using FluentValidation;
 using MTSTrueTechHack.Backend.Models;
 
@@ -23,8 +24,9 @@ public sealed class ChatRequestValidator
 {
     public ChatRequestValidator()
     {
-        RuleFor(chat => chat.Text)
-            .NotEmpty()
+        // Было RuleFor(chat => chat.Text) — заменили на Message
+        RuleFor(chat => chat.Message)
+            .NotEmpty().WithMessage("Сообщение не может быть пустым")
             .MaximumLength(1_000);
     }
 }

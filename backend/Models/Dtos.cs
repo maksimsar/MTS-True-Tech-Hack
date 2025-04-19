@@ -1,4 +1,5 @@
-namespace MTSTrueTechHack.Backend.Models;
+namespace MTSTrueTechHack.Backend.Models.Dtos;
+
 
 /// <summary>DTO, поступающий в бизнес‑логику для создания схемы.</summary>
 public sealed record CreateSchemaDto(
@@ -23,4 +24,10 @@ public sealed record ChatMessageDto(
     string   Text,
     bool     IsFromUser,
     DateTime Timestamp
+);
+/// <summary>Внутренний DTO для GPT‑клиента — диалог против схемы.</summary>
+public sealed record ChatDto(
+    string                   JsonSchema,
+    string                   Message,
+    IEnumerable<ChatMessageDto> History
 );

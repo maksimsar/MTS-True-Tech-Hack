@@ -1,8 +1,8 @@
+// src/features/ChatWindow.tsx
 import { useRef, useEffect } from "react";
 import { Input } from "../components/input";
 import { Button } from "../components/button";
 import { Card, CardContent } from "../components/card";
-import { ScrollArea } from "../components/scroll-area";
 
 type Props = {
   messages: string[];
@@ -11,7 +11,12 @@ type Props = {
   handleSend: () => void;
 };
 
-export default function ChatWindow({ messages, input, setInput, handleSend }: Props) {
+export default function ChatWindow({
+  messages,
+  input,
+  setInput,
+  handleSend,
+}: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -20,9 +25,13 @@ export default function ChatWindow({ messages, input, setInput, handleSend }: Pr
   }, [messages]);
 
   return (
-    <Card className="col-span-1 md:col-span-1 flex flex-col h-full">
-      <CardContent className="flex-1 flex flex-col p-4 overflow-hidden">
-        <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-2 pr-2">
+    <Card className="col-span-1 md:col-span-1 flex flex-col h-full min-h-0">
+      <CardContent className="flex flex-col flex-1 p-4 min-h-0">
+        {/* Скролл-блок */}
+        <div
+          ref={scrollRef}
+          className="flex-1 min-h-0 overflow-y-auto space-y-2 pr-2"
+        >
           {messages.map((msg, idx) => (
             <div
               key={idx}
@@ -32,7 +41,9 @@ export default function ChatWindow({ messages, input, setInput, handleSend }: Pr
             </div>
           ))}
         </div>
-        <div className="flex gap-2 mt-4">
+
+        {/* Поле ввода — фиксированной высоты */}
+        <div className="flex-none flex gap-2 mt-4">
           <Input
             className="flex-1"
             placeholder="Введите описание или команду..."

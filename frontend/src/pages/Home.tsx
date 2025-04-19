@@ -36,8 +36,12 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--bg)', color: 'var(--fg)' }}>
-      <header className="flex justify-between items-center px-6 py-6 md:py-8 max-w-[1400px] w-full mx-auto">
+    <div
+      className="h-screen flex flex-col"
+      style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}
+    >
+      {/* Header */}
+      <header className="flex-none flex justify-between items-center px-6 py-6 md:py-8 max-w-[1400px] w-full mx-auto">
         <div>
           <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-[var(--accent)]">
             AI Schema Assistant
@@ -49,18 +53,33 @@ export default function Home() {
         <ThemeToggle />
       </header>
 
+      {/* Main content */}
       <main
-        className="grid grid-cols-1 md:grid-cols-3 gap-6 px-6 max-w-[1400px] w-full mx-auto flex-1"
-        style={{ minHeight: '0' }}
+        className="flex-1 flex overflow-hidden px-6 max-w-[1400px] w-full mx-auto gap-4 pb-4"
+        style={{ minHeight: 0 }}
       >
-        <ChatWindow
-          messages={messages}
-          input={input}
-          setInput={setInput}
-          handleSend={handleSend}
-        />
-        <JsonEditor json={jsonSchema} setJson={setJsonSchema} />
-        <HistoryPanel history={history} />
+        {/* Left half: Chat */}
+        <div className="w-1/2 h-full flex flex-col min-h-0">
+          <ChatWindow
+            messages={messages}
+            input={input}
+            setInput={setInput}
+            handleSend={handleSend}
+          />
+        </div>
+
+        {/* Right half: Top 1/4 JSON, Bottom 1/4 History */}
+        <div className="w-1/2 h-full flex flex-col min-h-0 gap-4">
+          {/* JSON Editor (upper quarter) */}
+          <div className="h-1/2 flex flex-col min-h-0">
+            <JsonEditor json={jsonSchema} setJson={setJsonSchema} />
+          </div>
+
+          {/* History Panel (lower quarter) */}
+          <div className="h-1/2 flex flex-col min-h-0">
+            <HistoryPanel history={history} />
+          </div>
+        </div>
       </main>
     </div>
   );
