@@ -1,9 +1,9 @@
+// src/pages/Home.tsx
 import { useState } from "react";
 import ChatWindow from "../features/ChatWindow";
 import JsonEditor from "../features/JsonEditor";
 import HistoryPanel from "../features/HistoryPanel";
-import ThemeToggle from '../components/ThemeToggle';
-
+import ThemeToggle from "../components/ThemeToggle";
 
 export default function Home() {
   const [messages, setMessages] = useState<string[]>([]);
@@ -36,35 +36,32 @@ export default function Home() {
   };
 
   return (
-        <div className="min-h-screen px-6 py-10"
-    style={{
-        backgroundColor: 'var(--bg)',
-        color: 'var(--fg)',
-    }}
-    >
-    <header className="flex justify-between items-center mb-8 max-w-[1400px] mx-auto">
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--bg)', color: 'var(--fg)' }}>
+      <header className="flex justify-between items-center px-6 py-6 md:py-8 max-w-[1400px] w-full mx-auto">
         <div>
-        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-[var(--accent)]">
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-[var(--accent)]">
             AI Schema Assistant
-        </h1>
-        <p className="text-sm text-zinc-400 mt-1">
+          </h1>
+          <p className="text-sm text-zinc-400 mt-1">
             Инструмент для генерации и редактирования JSON-схем
-        </p>
+          </p>
         </div>
         <ThemeToggle />
-    </header>
+      </header>
 
-    <main className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-[1400px] mx-auto">
+      <main
+        className="grid grid-cols-1 md:grid-cols-3 gap-6 px-6 max-w-[1400px] w-full mx-auto flex-1"
+        style={{ minHeight: '0' }}
+      >
         <ChatWindow
-        messages={messages}
-        input={input}
-        setInput={setInput}
-        handleSend={handleSend}
+          messages={messages}
+          input={input}
+          setInput={setInput}
+          handleSend={handleSend}
         />
         <JsonEditor json={jsonSchema} setJson={setJsonSchema} />
         <HistoryPanel history={history} />
-    </main>
+      </main>
     </div>
-
   );
 }

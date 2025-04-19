@@ -13,7 +13,7 @@ export default function HistoryPanel({ history }: Props) {
         <h2 className="text-lg font-semibold mb-2">История изменений</h2>
         <ScrollArea className="space-y-2">
           {history.map((entry, idx) => (
-            <div key={idx} className="text-xs bg-zinc-800 p-2 rounded-md">
+            <div key={idx} className="text-xs bg-white text-zinc-900 p-2 rounded-md dark:bg-zinc-700 dark:text-white">
               {entry}
             </div>
           ))}
