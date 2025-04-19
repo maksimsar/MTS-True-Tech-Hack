@@ -1,4 +1,3 @@
-// src/pages/Home.tsx
 import { useState } from "react";
 import ChatWindow from "../features/ChatWindow";
 import JsonEditor from "../features/JsonEditor";
@@ -13,14 +12,12 @@ export default function Home() {
 
   const handleSend = () => {
     if (!input.trim()) return;
-
     setMessages((prev) => [...prev, `You: ${input}`]);
     setHistory((prev) => [...prev, `Пользователь: ${input}`]);
 
     setTimeout(() => {
       const reply = `AI: Обновляю схему по запросу "${input}"`;
       setMessages((prev) => [...prev, reply]);
-
       setJsonSchema((prev) => {
         try {
           const parsed = JSON.parse(prev);
@@ -36,8 +33,12 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--bg)', color: 'var(--fg)' }}>
-      <header className="flex justify-between items-center px-6 py-6 md:py-8 max-w-[1400px] w-full mx-auto">
+    <div
+      className="h-screen flex flex-col"
+      style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}
+    >
+      {/* Шапка */}
+      <header className="flex-none flex justify-between items-center px-6 py-6 md:py-8 max-w-[1400px] w-full mx-auto">
         <div>
           <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-[var(--accent)]">
             AI Schema Assistant
@@ -49,9 +50,10 @@ export default function Home() {
         <ThemeToggle />
       </header>
 
+      {/* Контент: фиксированная высота = h-screen – header */}
       <main
-        className="grid grid-cols-1 md:grid-cols-3 gap-6 px-6 max-w-[1400px] w-full mx-auto flex-1"
-        style={{ minHeight: '0' }}
+        className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 px-6 max-w-[1400px] w-full mx-auto overflow-hidden"
+        style={{ minHeight: 0 }}
       >
         <ChatWindow
           messages={messages}

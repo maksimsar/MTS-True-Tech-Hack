@@ -1,9 +1,16 @@
-import { ReactNode } from "react";
+// src/components/scroll-area.tsx
+import { forwardRef, ReactNode } from "react";
 
-export function ScrollArea({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return (
-    <div className={`overflow-y-auto h-full pr-2 ${className}`} style={{ color: 'var(--fg)' }}>
-      {children}
-    </div>
-  );
-}
+export const ScrollArea = forwardRef<
+  HTMLDivElement,
+  { children: ReactNode; className?: string }
+>(({ children, className = "" }, ref) => (
+  <div
+    ref={ref}
+    className={`overflow-y-auto h-full pr-2 ${className}`}
+    style={{ color: "var(--fg)" }}
+  >
+    {children}
+  </div>
+));
+ScrollArea.displayName = "ScrollArea";
