@@ -1,15 +1,13 @@
 // TODO: при выделении слоёв перенести каждый контракт
 //       в Api/Contracts/Schema/...
 
-namespace MTS.TrueTechHack.Models.Contracts;
+namespace MTSTrueTechHack.Backend.Models;
 
 /// <summary>
 /// Контракты внешнего HTTP‑API для работы со схемами
 /// и чат‑редактированием (запросы ↔ ответы).
 /// </summary>
 public static class ContractDocs { } // «заглушка»‑пространство имён (Swagger игнорирует)
-
-#region ---------- Requests ----------
 
 /// <summary>
 /// Тело запроса на создание новой JSON‑схемы.
@@ -29,9 +27,7 @@ public sealed record ChatRequest(
     string Text
 );
 
-#endregion
 
-#region ---------- Responses ----------
 
 /// <summary>
 /// Ответ API после генерации схемы GPT‑ассистентом.
@@ -56,5 +52,3 @@ public sealed record ChatMessageResponse(
     /// <summary>Момент отправки сообщения (UTC).</summary>
     DateTime Timestamp
 );
-
-#endregion
