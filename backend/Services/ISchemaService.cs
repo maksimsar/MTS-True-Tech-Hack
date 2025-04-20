@@ -12,4 +12,6 @@ public interface ISchemaService
     
     // ChatAsync возвращает ChatMessageResponse (он определён в Contracts.cs)
     Task<ChatMessageResponse> ChatAsync(int schemaId, ChatRequest req);
+    
+    Task<SchemaDto?> GetByIdAsync(int id);
 }
