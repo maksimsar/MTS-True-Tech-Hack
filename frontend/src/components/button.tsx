@@ -2,15 +2,18 @@ import { ButtonHTMLAttributes, ReactNode } from "react";
 
 export function Button({
   children,
+  className = "",
+  style,
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & { children: ReactNode }) {
   return (
     <button
       {...props}
-      className="rounded-lg px-4 py-2 font-medium transition"
+      className={`rounded-full h-10 w-10 font-medium ${className}`}
       style={{
         backgroundColor: 'var(--accent)',
         color: '#fff',
+        ...style,
       }}
     >
       {children}
