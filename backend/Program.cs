@@ -1,43 +1,45 @@
-using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using MTSTrueTechHack.Backend;
-using MTSTrueTechHack.Data;
-using MTSTrueTechHack.Backend.Models.Dtos;
 using MTSTrueTechHack.Backend.Services;
-using System.Diagnostics;
+using MTSTrueTechHack.Data;
 using MTSTrueTechHack.Backend.Validators;
+using AutoMapper;
+using FluentValidation; // для IMapper
 
 var builder = WebApplication.CreateBuilder(args);
 
 // 1) Controllers
 builder.Services.AddControllers();
-// AutoMapper
+
+// 2) AutoMapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-// Репозиторий
+// 3) Репозиторий и сервисы
 builder.Services.AddScoped<ISchemaRepository, SchemaRepository>();
+builder.Services.AddScoped<ISchemaService,     SchemaService>();
 
-// Сервис бизнес‑логики
-builder.Services.AddScoped<ISchemaService, SchemaService>();
-
+// 4) HTTP‑клиент для GPT
 builder.Services.AddHttpClient<GptClient>();
 
+// 5) FluentValidation
+builder.Services
+    .AddFluentValidationAutoValidation()
+    .AddValidatorsFromAssemblyContaining<CreateSchemaRequestValidator>();
 
-// 2) FluentValidation
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateSchemaRequestValidator>();
-
-
-// 3) Swagger / OpenAPI
+// 6) Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 4) EF Core
+// 7) EF Core + PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
+
+// *НЕ* обязательно, но можно проверить маппинги сразу:
+var mapper = app.Services.GetRequiredService<IMapper>();
+mapper.ConfigurationProvider.AssertConfigurationIsValid();
 
 if (app.Environment.IsDevelopment())
 {
@@ -48,5 +50,4 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-// Checking
 app.Run();

@@ -60,7 +60,13 @@ public class SchemaService : ISchemaService
         var historyDtos = schema.Messages
             .Select(m => new ChatMessageDto(m.Text, m.IsFromUser, m.Timestamp))
             .ToList();
-        var chatDto = new ChatDto(schema.JSONSchema, req.Message, historyDtos);
+
+        // Правильный порядок: сначала Message, потом History, потом JsonSchema
+        var chatDto = new ChatDto(
+            Message:    req.Message,
+            History:    historyDtos,
+            JsonSchema: schema.JSONSchema
+        );
         var replyText = await _gpt.ContinueChatAsync(chatDto);
 
         // Сохраняем ответ ассистента
