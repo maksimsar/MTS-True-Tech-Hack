@@ -1,4 +1,3 @@
-// src/features/HistoryPanel.tsx
 import { Card, CardContent } from "../components/card";
 import { ScrollArea } from "../components/scroll-area";
 
@@ -15,8 +14,8 @@ export default function HistoryPanel({ history }: Props) {
           История изменений
         </h2>
 
-        {/* Скролл‑область */}
-        <ScrollArea className="flex-1 min-h-0 space-y-2">
+        {/* Скролл‑область с кастомным скроллбаром */}
+        <ScrollArea className="flex-1 min-h-0 space-y-2 custom-scroll">
           {history.map((entry, idx) => (
             <div
               key={idx}
