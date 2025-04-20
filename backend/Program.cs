@@ -1,45 +1,47 @@
+using AutoMapper;
 using FluentValidation.AspNetCore;
+using FluentValidation; 
 using Microsoft.EntityFrameworkCore;
 using MTSTrueTechHack.Backend;
 using MTSTrueTechHack.Backend.Services;
-using MTSTrueTechHack.Data;
 using MTSTrueTechHack.Backend.Validators;
-using AutoMapper;
-using FluentValidation; // для IMapper
+using MTSTrueTechHack.Data;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1) Controllers
+// Controllers
 builder.Services.AddControllers();
 
-// 2) AutoMapper
+// AutoMapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-// 3) Репозиторий и сервисы
+// DI
 builder.Services.AddScoped<ISchemaRepository, SchemaRepository>();
 builder.Services.AddScoped<ISchemaService,     SchemaService>();
-
-// 4) HTTP‑клиент для GPT
 builder.Services.AddHttpClient<GptClient>();
 
-// 5) FluentValidation
+// Validation
 builder.Services
     .AddFluentValidationAutoValidation()
     .AddValidatorsFromAssemblyContaining<CreateSchemaRequestValidator>();
 
-// 6) Swagger/OpenAPI
+// Swagger / OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 7) EF Core + PostgreSQL
+// EF Core + PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
-// *НЕ* обязательно, но можно проверить маппинги сразу:
-var mapper = app.Services.GetRequiredService<IMapper>();
-mapper.ConfigurationProvider.AssertConfigurationIsValid();
+// Validate AutoMapper configuration
+app.Services
+    .GetRequiredService<IMapper>()
+    .ConfigurationProvider
+    .AssertConfigurationIsValid();
 
 if (app.Environment.IsDevelopment())
 {
@@ -51,3 +53,11 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
+
+//Создание пользователя
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+    await DbSeeder.SeedAsync(db);
+}

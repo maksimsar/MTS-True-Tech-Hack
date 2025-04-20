@@ -81,4 +81,10 @@ public class SchemaService : ISchemaService
         // Возвращаем HTTP‑контракт
         return new ChatMessageResponse(replyText, false, DateTime.UtcNow);
     }
+
+    public async Task<SchemaDto?> GetByIdAsync(int id)
+    {
+        var entity = await _repo.GetAsync(id);
+        return entity is null ? null : _mapper.Map<SchemaDto>(entity);
+    }
 }
