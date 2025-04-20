@@ -25,24 +25,24 @@ export default function ChatWindow({
   }, [messages]);
 
   return (
-    <Card className="col-span-1 md:col-span-1 flex flex-col h-full min-h-0">
+    <Card className="col-span-1 md:col-span-1 flex flex-col h-full min-h-0 rounded-xl shadow-sm transition">
       <CardContent className="flex flex-col flex-1 p-4 min-h-0">
         {/* Скролл-блок */}
         <div
           ref={scrollRef}
-          className="flex-1 min-h-0 overflow-y-auto space-y-2 pr-2"
+          className="flex-1 min-h-0 overflow-y-auto space-y-2 pr-2 custom-scroll"
         >
           {messages.map((msg, idx) => (
             <div
               key={idx}
-              className="text-sm p-2 rounded-md bg-white text-zinc-900 dark:bg-zinc-700 dark:text-white"
+              className="text-sm p-3 rounded-lg bg-white text-zinc-900 dark:bg-zinc-700 dark:text-white break-words whitespace-pre-wrap shadow-sm transition"
             >
               {msg}
             </div>
           ))}
         </div>
 
-        {/* Поле ввода — фиксированной высоты */}
+        {/* Поле ввода */}
         <div className="flex-none flex gap-2 mt-4">
           <Input
             className="flex-1"

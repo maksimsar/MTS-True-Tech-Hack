@@ -60,7 +60,13 @@ public class SchemaService : ISchemaService
         var historyDtos = schema.Messages
             .Select(m => new ChatMessageDto(m.Text, m.IsFromUser, m.Timestamp))
             .ToList();
-        var chatDto = new ChatDto(schema.JSONSchema, req.Message, historyDtos);
+
+        // Правильный порядок: сначала Message, потом History, потом JsonSchema
+        var chatDto = new ChatDto(
+            Message:    req.Message,
+            History:    historyDtos,
+            JsonSchema: schema.JSONSchema
+        );
         var replyText = await _gpt.ContinueChatAsync(chatDto);
 
         // Сохраняем ответ ассистента
@@ -74,5 +80,11 @@ public class SchemaService : ISchemaService
 
         // Возвращаем HTTP‑контракт
         return new ChatMessageResponse(replyText, false, DateTime.UtcNow);
+    }
+
+    public async Task<SchemaDto?> GetByIdAsync(int id)
+    {
+        var entity = await _repo.GetAsync(id);
+        return entity is null ? null : _mapper.Map<SchemaDto>(entity);
     }
 }

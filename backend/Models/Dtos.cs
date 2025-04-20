@@ -6,7 +6,7 @@ public sealed record CreateSchemaDto(
     int    UserId,
     string Name,
     string Description,
-    string JsonSchema          // уже сгенерированная строка
+    string JsonSchema = ""
 );
 
 /// <summary>DTO, который сервис отдаёт контроллеру.</summary>
@@ -27,7 +27,7 @@ public sealed record ChatMessageDto(
 );
 /// <summary>Внутренний DTO для GPT‑клиента — диалог против схемы.</summary>
 public sealed record ChatDto(
-    string                   JsonSchema,
-    string                   Message,
-    IEnumerable<ChatMessageDto> History
+    string Message,
+    IEnumerable<ChatMessageDto> History,
+    string JsonSchema = ""
 );
