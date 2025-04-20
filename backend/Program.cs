@@ -37,6 +37,12 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await DbSeeder.SeedAsync(db);          // <‑‑ вот здесь
+}
+
 // Validate AutoMapper configuration
 app.Services
     .GetRequiredService<IMapper>()
@@ -54,10 +60,3 @@ app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
-//Создание пользователя
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await db.Database.MigrateAsync();
-    await DbSeeder.SeedAsync(db);
-}
