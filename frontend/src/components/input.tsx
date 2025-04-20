@@ -9,7 +9,6 @@ export function Input(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
     const el = ref.current;
     if (!el) return;
 
-    // Сброс высоты, чтобы scrollHeight был корректен
     el.style.height = "auto";
 
     const computed = getComputedStyle(el);
@@ -19,12 +18,7 @@ export function Input(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
     const newHeight = Math.min(el.scrollHeight, maxHeight);
     el.style.height = `${newHeight}px`;
 
-    // Если текста мало — скрыть скроллбар
-    if (el.scrollHeight <= el.clientHeight) {
-      el.style.overflowY = "hidden";
-    } else {
-      el.style.overflowY = "auto";
-    }
+    el.style.overflowY = el.scrollHeight > newHeight ? "auto" : "hidden";
   }, [props.value]);
 
   return (
@@ -34,19 +28,19 @@ export function Input(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
       rows={1}
       className={`
         rounded px-3 py-2 w-full
-        outline-none border border-gray-400
-        focus:ring-2 ring-[var(--accent)]
+        outline-none border-none
+        focus:ring-0
         bg-transparent transition
         resize-none pr-1
         custom-scroll
-        text-sm
+        text-sm text-zinc-900 dark:text-white
+        placeholder-gray-400 dark:placeholder-zinc-500
       `}
       style={{
-        color: "var(--fg)",
-        backgroundColor: "var(--surface)",
         maxHeight: `${MAX_ROWS}em`,
-        overflowY: "hidden", // по умолчанию скрыт
+        backgroundColor: "transparent",
       }}
     />
   );
 }
+

@@ -43,16 +43,23 @@ export default function ChatWindow({
         </div>
 
         {/* Поле ввода */}
-        <div className="flex-none flex gap-2 mt-4">
-          <Input
-            className="flex-1"
-            placeholder="Введите описание или команду..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          />
-          <Button onClick={handleSend}>Отправить</Button>
-        </div>
+ <div className="flex-none flex gap-2 mt-4 items-end bg-white dark:bg-zinc-800 border-none dark:border-zinc-700 rounded-2xl px-2 py-2 shadow-sm">
+  <Input
+    placeholder="Опишите бизнес-процесс..."
+    value={input}
+    onChange={(e) => setInput(e.target.value)}
+    onKeyDown={(e) => e.key === "Enter" && handleSend()}
+    className="flex-1"
+  />
+  <div>
+    <Button
+      onClick={handleSend}
+      className="bg-red-500 hover:bg-red-700 text-white rounded-full h-10 w-10 flex items-center justify-center shrink-0"
+    >
+      ↑
+    </Button>
+  </div>
+</div>
       </CardContent>
     </Card>
   );
