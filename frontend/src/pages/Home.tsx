@@ -71,12 +71,12 @@ export default function Home() {
         {/* Right half: Top 1/4 JSON, Bottom 1/4 History */}
         <div className="w-1/2 h-full flex flex-col min-h-0 gap-4">
           {/* JSON Editor (upper quarter) */}
-          <div className="h-1/2 flex flex-col min-h-0">
+          <div className="h-3/4 flex flex-col min-h-0">
             <JsonEditor json={jsonSchema} setJson={setJsonSchema} />
           </div>
 
           {/* History Panel (lower quarter) */}
-          <div className="h-1/2 flex flex-col min-h-0">
+          <div className="h-1/4 flex flex-col min-h-0">
             <HistoryPanel history={history} />
           </div>
         </div>
