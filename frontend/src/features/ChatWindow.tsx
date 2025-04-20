@@ -32,14 +32,19 @@ export default function ChatWindow({
           ref={scrollRef}
           className="flex-1 min-h-0 overflow-y-auto space-y-2 pr-2 custom-scroll"
         >
-          {messages.map((msg, idx) => (
-            <div
-              key={idx}
-              className="text-sm p-3 rounded-lg bg-white text-zinc-900 dark:bg-zinc-700 dark:text-white break-words whitespace-pre-wrap shadow-sm transition"
-            >
-              {msg}
-            </div>
-          ))}
+        {messages.map((msg, idx) => (
+          <div
+            key={idx}
+            className="
+              text-sm p-2 rounded-md bg-white text-zinc-900 dark:bg-zinc-700 dark:text-white
+              opacity-0 animate-fade-in-up
+            "
+            style={{ animationDelay: `${idx * 40}ms` }} // волна сообщений
+          >
+            {msg}
+          </div>
+        ))}
+
         </div>
 
         {/* Поле ввода */}
