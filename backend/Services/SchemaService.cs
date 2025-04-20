@@ -20,26 +20,25 @@ public class SchemaService : ISchemaService
 
     public async Task<SchemaDto> CreateAsync(CreateSchemaRequest req)
     {
-        // map request → CreateSchemaDto
-        var dto = _mapper.Map<CreateSchemaDto>(req);
+        // 1. Формируем DTO для GPT
+        var dto = new CreateSchemaDto(req.UserId, req.Name, req.Description, string.Empty);
 
-        // генерируем (метод остался GenerateSchemaAsync)
-        var json = await _gpt.GenerateSchemaAsync(dto);
+        // 2. Генерируем JSON‑схему
+        var jsonSchema = await _gpt.GenerateSchemaAsync(dto);
 
-        var entity = new Schema
-        {
-            UserID      = req.UserId,
-            Name        = req.Name,
-            Description = req.Description,
-            JSONSchema  = json,
-            CreatedAt   = DateTime.UtcNow,
-            UpdatedAt   = DateTime.UtcNow
+        // 3. Создаём и сохраняем Entity
+        var entity = new Schema {
+            UserID     = req.UserId,
+            Name       = req.Name,
+            Description= req.Description,
+            JSONSchema = jsonSchema,
+            CreatedAt  = DateTime.UtcNow,
+            UpdatedAt  = DateTime.UtcNow
         };
-
         await _repo.AddAsync(entity);
         await _repo.SaveAsync();
 
-        // map to SchemaDto и возвращаем
+        // 4. Маппим Entity → внутренний DTO
         return _mapper.Map<SchemaDto>(entity);
     }
 
@@ -48,17 +47,32 @@ public class SchemaService : ISchemaService
         var schema = await _repo.GetAsync(schemaId)
                      ?? throw new KeyNotFoundException($"Schema {schemaId} not found");
 
-        // Конструируем DTO через конструктор, передаём все три параметра
-        var chatDto = new ChatDto(
-            schema.JSONSchema,  // JsonSchema
-            req.Message,        // Message
-            req.History         // History
-        );
+        // Сохраняем запрос пользователя
+        schema.Messages.Add(new Message {
+            SchemaID   = schemaId,
+            Text       = req.Message,
+            IsFromUser = true,
+            Timestamp  = DateTime.UtcNow
+        });
+        await _repo.SaveAsync();
 
-        // Вызываем именно ContinueChatAsync, а не GenerateChatAsync
+        // Собираем историю и вызываем GPT
+        var historyDtos = schema.Messages
+            .Select(m => new ChatMessageDto(m.Text, m.IsFromUser, m.Timestamp))
+            .ToList();
+        var chatDto = new ChatDto(schema.JSONSchema, req.Message, historyDtos);
         var replyText = await _gpt.ContinueChatAsync(chatDto);
 
-        // Используем позиционные аргументы, чтобы не ошибаться с регистром имен
+        // Сохраняем ответ ассистента
+        schema.Messages.Add(new Message {
+            SchemaID   = schemaId,
+            Text       = replyText,
+            IsFromUser = false,
+            Timestamp  = DateTime.UtcNow
+        });
+        await _repo.SaveAsync();
+
+        // Возвращаем HTTP‑контракт
         return new ChatMessageResponse(replyText, false, DateTime.UtcNow);
     }
 }
