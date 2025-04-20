@@ -17,8 +17,27 @@ interface ChatMessageResponse {
   timestamp: string;
 }
 
+// Пытаемся распарсить строку в JSON‑объект
+function tryParseJson(str: string): any | null {
+  try {
+    const obj = JSON.parse(str);
+    return obj && typeof obj === "object" ? obj : null;
+  } catch {
+    return null;
+  }
+}
+
+// Проверяем, похоже ли это на JSON‑схему
+function looksLikeJsonSchema(obj: any): boolean {
+  return (
+    obj &&
+    typeof obj === "object" &&
+    (typeof obj.type === "string" || typeof obj.$schema === "string")
+  );
+}
+
 export default function Home() {
-  const API = import.meta.env.VITE_API_URL!; // http://localhost:5074/api
+  const API = import.meta.env.VITE_API_URL!; // например "http://localhost:5074/api"
 
   const [schemaId, setSchemaId] = useState<number | null>(null);
   const [messages, setMessages] = useState<string[]>([]);
@@ -29,69 +48,84 @@ export default function Home() {
   const handleSend = async () => {
     if (!input.trim()) return;
 
-    // 1) добавляем сообщение пользователя в чат
-    setMessages(m => [...m, `You: ${input}`]);
-    setHistory(h => [...h, `Пользователь: ${input}`]);
+    // 1) добавляем сообщение пользователя
+    setMessages((m) => [...m, `You: ${input}`]);
+    setHistory((h) => [...h, `Пользователь: ${input}`]);
 
     try {
-      // A. Если схемы ещё нет — создаём и сразу комментируем
+      // A) Создание схемы + первый комментарий
       if (schemaId === null) {
-        // Создаём схему
+        // 1.1) создаём схему
         const resSchema = await fetch(`${API}/schemas`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             userId: 1,
             name: input,
-            description: input
-          })
+            description: input,
+          }),
         });
         if (!resSchema.ok) throw new Error(await resSchema.text());
         const { id, jsonSchema: js } = (await resSchema.json()) as SchemaResponse;
 
         setSchemaId(id);
-        setJsonSchema(js);
 
-        // Шлём сразу же комментарий GPT на основе сгенеренной схемы
+        // обновляем редактор JSON‑схем
+        const parsedSchema = tryParseJson(js);
+        if (parsedSchema && looksLikeJsonSchema(parsedSchema)) {
+          setJsonSchema(JSON.stringify(parsedSchema, null, 2));
+        } else {
+          setJsonSchema(js);
+        }
+
+        // 1.2) сразу просим комментарий у GPT
         const resChat = await fetch(`${API}/schemas/${id}/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            message: input,
-            history: []  // пустая история
-          })
+          body: JSON.stringify({ message: input, history: [] }),
         });
         if (!resChat.ok) throw new Error(await resChat.text());
         const { text } = (await resChat.json()) as ChatMessageResponse;
 
-        // В чат окно выводим реальный ответ GPT
-        setMessages(m => [...m, `AI: ${text}`]);
-        setHistory(h => [...h, `AI: ${text}`]);
+        const parsed = tryParseJson(text);
+        if (parsed && looksLikeJsonSchema(parsed)) {
+          // если GPT вернул новую схему — обновляем редактор
+          setJsonSchema(JSON.stringify(parsed, null, 2));
+        } else {
+          // обычный текстовый ответ
+          setMessages((m) => [...m, `AI: ${text}`]);
+          setHistory((h) => [...h, `AI: ${text}`]);
+        }
       }
-      // B. Если схема уже есть — обычный чат
+      // B) Обычный чат по существующей схеме
       else {
         const resChat = await fetch(`${API}/schemas/${schemaId}/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             message: input,
-            history: history.map(entry => ({
+            history: history.map((entry) => ({
               text: entry.replace(/^Пользователь: |^AI: /, ""),
               isFromUser: entry.startsWith("Пользователь:"),
-              timestamp: new Date().toISOString()
-            }))
-          })
+              timestamp: new Date().toISOString(),
+            })),
+          }),
         });
         if (!resChat.ok) throw new Error(await resChat.text());
         const { text } = (await resChat.json()) as ChatMessageResponse;
 
-        setMessages(m => [...m, `AI: ${text}`]);
-        setHistory(h => [...h, `AI: ${text}`]);
+        const parsed = tryParseJson(text);
+        if (parsed && looksLikeJsonSchema(parsed)) {
+          setJsonSchema(JSON.stringify(parsed, null, 2));
+        } else {
+          setMessages((m) => [...m, `AI: ${text}`]);
+          setHistory((h) => [...h, `AI: ${text}`]);
+        }
       }
     } catch (e: any) {
       console.error("API error:", e);
-      setMessages(m => [...m, `Ошибка: ${e.message}`]);
-      setHistory(h => [...h, `Ошибка: ${e.message}`]);
+      setMessages((m) => [...m, `Ошибка: ${e.message}`]);
+      setHistory((h) => [...h, `Ошибка: ${e.message}`]);
     } finally {
       setInput("");
     }
@@ -132,7 +166,6 @@ export default function Home() {
 
         {/* Правая половина: JSON‑редактор + история */}
         <div className="w-1/2 h-full flex flex-col min-h-0 gap-4">
-
           <div className="h-1/2 flex flex-col min-h-0">
             <JsonEditor json={jsonSchema} setJson={setJsonSchema} />
           </div>
