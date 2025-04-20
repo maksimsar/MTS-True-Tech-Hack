@@ -7,8 +7,6 @@ using MTSTrueTechHack.Backend.Services;
 using MTSTrueTechHack.Backend.Validators;
 using MTSTrueTechHack.Data;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Controllers
@@ -19,7 +17,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // DI
 builder.Services.AddScoped<ISchemaRepository, SchemaRepository>();
-builder.Services.AddScoped<ISchemaService,     SchemaService>();
+builder.Services.AddScoped<ISchemaService, SchemaService>();
 builder.Services.AddHttpClient<GptClient>();
 
 // Validation
@@ -37,13 +35,14 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 
 var app = builder.Build();
 
+// Сидируем БД
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await DbSeeder.SeedAsync(db);          // <‑‑ вот здесь
+    await DbSeeder.SeedAsync(db);
 }
 
-// Validate AutoMapper configuration
+// Проверяем AutoMapper
 app.Services
     .GetRequiredService<IMapper>()
     .ConfigurationProvider
@@ -59,4 +58,3 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
-
