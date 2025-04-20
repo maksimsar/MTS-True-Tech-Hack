@@ -32,19 +32,22 @@ export default function ChatWindow({
           ref={scrollRef}
           className="flex-1 min-h-0 overflow-y-auto space-y-2 pr-2 custom-scroll"
         >
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className="
-              text-sm p-2 rounded-md bg-white text-zinc-900 dark:bg-zinc-700 dark:text-white
-              opacity-0 animate-fade-in-up
-            "
-            style={{ animationDelay: `${idx * 40}ms` }} // волна сообщений
-          >
-            {msg}
-          </div>
-        ))}
-
+          {messages.map((msg, idx) => {
+            const isUser = msg.startsWith("You:");
+            return (
+              <div
+                key={idx}
+                className={`${
+                  isUser
+                    ? "self-end bg-blue-100 text-right"
+                    : "self-start bg-gray-100 text-left"
+                } text-sm p-2 rounded-md dark:bg-zinc-700 dark:text-white opacity-0 animate-fade-in-up`}
+                style={{ animationDelay: `${idx * 40}ms` }} // волна сообщений
+              >
+                {msg}
+              </div>
+            );
+          })}
         </div>
 
         {/* Поле ввода */}
